@@ -3,7 +3,7 @@
  * Team: Akatsuki | RIFT 2026 Hackathon
  */
 
-const GEMINI_API_KEY = "AIzaSyA21ESlEwTLHo14pfp5RK352b4Hi3VLH5U"; 
+const GEMINI_API_KEY = "Your api key"; 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const PHARMA_DB = {
