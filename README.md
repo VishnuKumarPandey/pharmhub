@@ -1,31 +1,45 @@
-# 🧬 PharmaGuard: AI-Powered Precision Medicine
-**Team Akatsuki | RIFT 2026 Hackathon**
+🧬 PharmaGuard: AI-Powered Precision Medicine
+Team Akatsuki | RIFT 2026 Hackathon
 
 PharmaGuard ek AI-powered pharmacogenomics engine hai jo raw genomic VCF files ko parse karta hai aur patient ke genetic variants ke basis par drug-response risks predict karta hai.
 
-## 🚀 Key Features
-- **VCF Parsing:** Raw VCF files se genetic variants (rsIDs) ko extract karna.
-- **AI-Driven Insights:** Gemini 1.5 Flash API ka use karke real-time clinical explanations aur recommendations dena.
-- **Schema Compliance:** Mandatory JSON output jo RIFT requirements ke mutabik format kiya gaya hai.
-- **Precision Medicine:** Har patient ke unique genetic profile ke hisaab se personalized drug safety assessment.
+🔗 Project Links
+Live Demo (Netlify): https://tourmaline-halva-33df26.netlify.app/
 
-## 🛠️ Deployment Instructions (Local Setup)
-Judge ya user ke liye project ko chalane ka tarika:
-1. Is repository ko clone karein ya ZIP file download karke extract karein.
-2. `index.html` file ko kisi bhi modern web browser (Chrome, Edge, ya Safari) mein open karein.
-3. `script.js` file kholiye aur `GEMINI_API_KEY` variable mein apni valid Gemini API key enter karein.
-4. Browser mein "Browse File" par click karke repository mein di gayi `gtf.vcf` file ko upload karein.
-5. Drug name select/type karein (jaise CODEINE ya WARFARIN) aur **Analyze Genomic Risk** button dabayein.
+LinkedIn Video Demo: [Yahan apna LinkedIn video link paste karein]
 
-## 📂 Sample Data for Testing
-Testing ke liye project ke root folder mein `gtf.vcf` file di gayi hai. Is file mein pharmacogenomics analysis ke liye zaroori specific genetic variants (jaise rs1061235) ko test data ke taur par rakha gaya hai.
+🏗️ Architecture Overview
+PharmaGuard ek simple lekin powerful workflow follow karta hai:
 
-## 📋 RIFT 2026 Mandatory Checklist
-- [x] Public GitHub Repository link provided.
-- [x] Comprehensive README with clear deployment guide.
-- [x] `package.json` included for project metadata.
-- [x] `.env.example` provided for configuration template.
-- [x] Sample VCF files included for evaluation.
+Data Input: User patient ki VCF file upload karta hai aur drug select karta hai.
 
----
-*Created by Team Akatsuki for RIFT 2026 Hackathon.*
+Local Parsing: JavaScript browser mein hi VCF file ko scan karke specific rsIDs (variants) dhoondhti hai.
+
+AI Reasoning: Detected variants aur drug name ko Gemini 1.5 Flash API par bheja jata hai.
+
+Clinical Output: AI se prapt insights ko mandatory JSON format aur ek visual report mein dikhaya jata hai.
+
+🛠️ Tech Stack
+Frontend: HTML5, CSS3 (Glassmorphism UI), JavaScript (ES6+)
+
+AI Engine: Google Gemini 1.5 Flash API
+
+Deployment: Netlify
+
+Version Control: GitHub
+
+📖 API Documentation
+Humne Google Gemini API ka use kiya hai clinical explanations generate karne ke liye.
+
+Model: gemini-1.5-flash
+
+Prompt Logic: AI ko ek pharmacogenomics expert ki tarah treat kiya gaya hai jo variant aur enzyme activity ke beech ka biological mechanism samjhata hai.
+
+🛠️ Installation & Usage
+Repository clone karein: git clone https://github.com/VishnuKumarPandey/pharmhub.git
+
+index.html ko browser mein open karein.
+
+script.js mein apni GEMINI_API_KEY daalein.
+
+Usage: Root folder mein di gayi gtf.vcf file upload karein aur "CODEINE" select karke analyze karein.
