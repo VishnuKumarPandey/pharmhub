@@ -3,34 +3,31 @@
  * Team: Akatsuki | RIFT 2026 Hackathon
  */
 
-const GEMINI_API_KEY = "Your api key"; 
+const GEMINI_API_KEY = "AIzaSyA21ESlEwTLHo14pfp5RK352b4Hi3VLH5U"; 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const PHARMA_DB = {
-    "CODEINE": { gene: "CYP2D6", variants: ["rs1061235", "rs3918290"] },
+    "CODEINE": { gene: "CYP2D6", variants: ["rs16947", "rs1135840", "rs1065852", "rs3892097"] },
     "WARFARIN": { gene: "CYP2C9", variants: ["rs1799853", "rs1057910"] },
-    "CLOPIDOGREL": { gene: "CYP2C19", variants: ["rs12248560", "rs28399504"] },
-    "SIMVASTATIN": { gene: "SLCO1B1", variants: ["rs4149056"] },
+    "CLOPIDOGREL": { gene: "CYP2C19", variants: ["rs4244285", "rs28399504", "rs12769205"] },
+    "SIMVASTATIN": { gene: "SLCO1B1", variants: ["rs4149056", "rs2306283"] },
     "AZATHIOPRINE": { gene: "TPMT", variants: ["rs1800462", "rs1142345"] },
-    "FLUOROURACIL": { gene: "DPYD", variants: ["rs3918290", "rs55886062"] }
+    "FLUOROURACIL": { gene: "DPYD", variants: ["rs3918290", "rs1801265", "rs67376798"] }
 };
 
-
-
-// UI Elements
 const vcfInput = document.getElementById('vcf-upload');
 const dropZone = document.getElementById('drop-zone');
 const analyzeBtn = document.getElementById('analyze-btn');
 
 vcfInput.addEventListener('change', () => {
     if (vcfInput.files.length > 0) {
-        dropZone.querySelector('p').innerHTML = `✅ <b>Ready:</b> ${vcfInput.files[0].name}`;
+        dropZone.querySelector('p').innerHTML = `✅ <b>File Ready:</b> ${vcfInput.files[0].name}`;
         dropZone.style.borderColor = "#fb7185"; 
     }
 });
 
 async function fetchAIExplanation(gene, drug, risk, variant) {
-    const prompt = `As a pharmacogenomics expert, explain in 2-3 sentences why a patient with ${gene} variant ${variant} has an "${risk}" risk for ${drug}. Include the biological mechanism (enzyme activity) and mention CPIC guidelines alignment.`;
+    const prompt = `Pharmacogenomics: Explain in 2 sentences why ${gene} variant ${variant} has a "${risk}" risk for ${drug}. Mention enzyme activity.`;
     try {
         const response = await fetch(GEMINI_URL, {
             method: "POST",
@@ -40,7 +37,7 @@ async function fetchAIExplanation(gene, drug, risk, variant) {
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
     } catch (e) {
-        return "Variant affects enzymatic drug metabolism. Dosage adjustment is recommended as per CPIC guidelines.";
+        return "Variant affects drug metabolism. Consult CPIC guidelines for dosage adjustment.";
     }
 }
 
@@ -49,7 +46,7 @@ analyzeBtn.addEventListener('click', async () => {
     const drugName = document.getElementById('drug-input').value.toUpperCase().trim();
 
     if (!vcfFile || !PHARMA_DB[drugName]) {
-        alert("Bhai, sahi VCF file aur supported drug provide karein!");
+        alert("Bhai, VCF file select karein aur valid drug (jaise CODEINE) daalein!");
         return;
     }
 
@@ -59,38 +56,39 @@ analyzeBtn.addEventListener('click', async () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
         const content = e.target.result;
-        if (!content.includes("##fileformat=VCF")) {
-            alert("Error: Invalid Genomic VCF!");
-            resetUI();
-            return;
-        }
-
         const config = PHARMA_DB[drugName];
         let detected = [];
+        let patientId = "UNKNOWN_PATIENT";
         const lines = content.split('\n');
+
         lines.forEach(line => {
-            if (line.startsWith('#')) return;
-            config.variants.forEach(rsid => {
-                if (line.includes(rsid)) {
-                    const cols = line.split(/\s+/);
-                    detected.push({ rsid: rsid, genotype: cols[4] || "A/G", gene: config.gene });
-                }
-            });
+            if (line.startsWith('#CHROM')) {
+                const h = line.split(/\s+/);
+                if (h.length >= 10) patientId = h[9].trim();
+                return;
+            }
+            if (line.startsWith('#') || !line.trim()) return;
+            
+            const cols = line.split(/\s+/);
+            if (cols.length < 10) return;
+
+            const rsid = cols[2]; // Professional format: RSID is index 2
+            const genotypeField = cols[9]; // Genotype is index 9
+            const genotype = genotypeField.split(':')[0];
+
+            if (config.variants.includes(rsid) && genotype.includes('1')) {
+                detected.push({ rsid: rsid, genotype: genotype, gene: config.gene });
+            }
         });
 
         const isRisk = detected.length > 0;
         const riskLabel = isRisk ? "Adjust Dosage" : "Safe";
-        const aiSummary = await fetchAIExplanation(config.gene, drugName, riskLabel, config.variants[0] || "None");
+        const aiSummary = await fetchAIExplanation(config.gene, drugName, riskLabel, detected[0]?.rsid || "None");
 
         const finalOutput = {
-            "patient_id": "AKATSUKI_" + Math.floor(Math.random()*9000 + 1000),
-            "drug": drugName,
-            "timestamp": new Date().toISOString(),
-            "risk_assessment": { "risk_label": riskLabel, "confidence_score": 0.94, "severity": isRisk ? "moderate" : "none" },
-            "pharmacogenomic_profile": { "primary_gene": config.gene, "diplotype": isRisk ? "*1/*4" : "*1/*1", "phenotype": isRisk ? "IM" : "NM", "detected_variants": detected },
-            "clinical_recommendation": { "action": isRisk ? `Reduce initial ${drugName} dose by 25% based on activity.` : "Standard starting dose recommended.", "guideline": "CPIC v4.2" },
-            "llm_generated_explanation": { "summary": aiSummary, "mechanism": "Genetic polymorphism affecting Cytochrome P450 enzymatic metabolism." },
-            "quality_metrics": { "vcf_parsing_success": true }
+            "patient_metadata": { "id": patientId, "vcf_reference": "GRCh38.p13" },
+            "analysis_results": { "drug": drugName, "prediction": riskLabel, "detected_variants": detected },
+            "clinical_insight": { "recommendation": isRisk ? `Reduce dose by 25%.` : "Standard dose.", "ai_summary": aiSummary }
         };
 
         renderOutput(finalOutput);
@@ -106,37 +104,21 @@ function renderOutput(data) {
     
     document.getElementById('json-output').textContent = JSON.stringify(data, null, 4);
     
-    const risk = data.risk_assessment.risk_label;
+    const risk = data.analysis_results.prediction;
     const color = risk === "Safe" ? "#10b981" : "#f59e0b";
 
+    document.getElementById('visual-result').innerHTML = `
+        <div style="border-left: 6px solid ${color}; padding: 20px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
+            <h3 style="color: ${color};">Patient: ${data.patient_metadata.id}</h3>
+            <p><b>Result:</b> ${risk}</p>
+            <p><b>Advice:</b> ${data.clinical_insight.recommendation}</p>
+            <p style="font-size: 0.9em; color: #94a3b8; margin-top: 10px;"><b>AI Logic:</b> ${data.clinical_insight.ai_summary}</p>
+        </div>
+    `;
+    resultsArea.scrollIntoView({ behavior: 'smooth' });
 }
 
-document.getElementById('download-pdf').addEventListener('click', () => {
-    if (!currentReportHTML) return alert("Pehle analyze karein!");
-    
-    const worker = document.createElement('div');
-    worker.style.position = 'fixed';
-    worker.style.left = '-9999px'; // Hide off-screen
-    worker.innerHTML = currentReportHTML;
-    document.body.appendChild(worker);
-
-    const opt = {
-        margin: 0.5,
-        filename: `PharmaGuard_Report_${Math.floor(Math.random()*9000)}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(worker).save().then(() => {
-        document.body.removeChild(worker); // Cleanup
-    });
-});
-
-function resetUI() {
-    location.reload(); // Simplest way to clear everything for next patient
-}
-
+function resetUI() { location.reload(); }
 function copyJSON() {
     const jsonText = document.getElementById('json-output').textContent;
     navigator.clipboard.writeText(jsonText);
