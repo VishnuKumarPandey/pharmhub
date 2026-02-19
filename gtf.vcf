@@ -1,0 +1,8 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene Name">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	PATIENT_001
+1	1234567	rs1061235	A	G	100	PASS	GENE=CYP2D6	GT	0/1
+1	2345678	rs1799853	C	T	100	PASS	GENE=CYP2C9	GT	1/1
+1	3456789	rs12248560	G	A	100	PASS	GENE=CYP2C19	GT	0/1

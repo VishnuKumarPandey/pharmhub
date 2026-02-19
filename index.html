@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaGuard - RIFT 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>PharmaGuard: AI Risk Predictor</h1>
+        
+        <div class="upload-section" id="drop-zone">
+            <p>Drag & Drop Patient VCF File here</p>
+            <input type="file" id="vcf-upload" accept=".vcf" hidden>
+            <button class="browse-btn" onclick="document.getElementById('vcf-upload').click()">Browse File</button>
+        </div>
+
+        <div class="input-group">
+            <label>Select Drug:</label>
+            <input type="text" id="drug-input" placeholder="e.g. CODEINE, WARFARIN">
+        </div>
+
+        <button id="analyze-btn" class="main-btn">Analyze Genomic Risk</button>
+
+        <div id="results" class="hidden">
+            <div class="result-header">
+                <h2>Analysis Result</h2>
+                <div>
+                    <button onclick="copyJSON()" class="action-btn">📋 JSON</button>
+                    <button onclick="resetUI()" class="action-btn" style="background:#ef4444;">🔄 Reset</button>
+                </div>
+            </div>
+            
+            <div id="visual-result"></div>
+            
+            <pre id="json-output"></pre>
+            
+            <button id="download-pdf" class="main-btn" style="background: #3b82f6; margin-top: 20px;">
+                📥 Download Professional PDF Report
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
