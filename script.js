@@ -15,7 +15,7 @@ const PHARMA_DB = {
     "FLUOROURACIL": { gene: "DPYD", variants: ["rs3918290", "rs55886062"] }
 };
 
-let currentReportHTML = ""; // To store PDF template
+
 
 // UI Elements
 const vcfInput = document.getElementById('vcf-upload');
@@ -108,42 +108,7 @@ function renderOutput(data) {
     
     const risk = data.risk_assessment.risk_label;
     const color = risk === "Safe" ? "#10b981" : "#f59e0b";
-    
-    // 1. UI Display (Dark Theme)
-    document.getElementById('visual-result').innerHTML = `
-        <div style="border-left: 6px solid ${color}; padding: 20px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
-            <h3 style="color: ${color}; margin-bottom: 10px;">Prediction: ${risk}</h3>
-            <p><b>Target Gene:</b> ${data.pharmacogenomic_profile.primary_gene} (${data.pharmacogenomic_profile.phenotype})</p>
-            <p><b>Clinical Advice:</b> ${data.clinical_recommendation.action}</p>
-            <hr style="border: 0.5px solid #334155; margin: 15px 0;">
-            <p style="font-size: 0.9em; color: #94a3b8;"><b>AI Explanation:</b> ${data.llm_generated_explanation.summary}</p>
-        </div>
-    `;
 
-    // 2. PDF Template (Clean White Theme for PDF library)
-    currentReportHTML = `
-        <div style="padding: 40px; font-family: Arial, sans-serif; color: #000; background: #fff; width: 700px;">
-            <h1 style="color: #e11d48; border-bottom: 2px solid #e11d48; padding-bottom: 10px;">PharmaGuard Clinical Report</h1>
-            <p style="text-align: right; color: #666;">Date: ${new Date().toLocaleDateString()}</p>
-            <p><b>Patient ID:</b> ${data.patient_id}</p>
-            <hr style="border: 0.5px solid #eee;">
-            <h2 style="color: ${risk === 'Safe' ? '#059669' : '#d97706'};">Result: ${risk}</h2>
-            <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-                <p><b>Genomic Target:</b> ${data.pharmacogenomic_profile.primary_gene} (${data.pharmacogenomic_profile.phenotype})</p>
-                <p><b>Detected Variant:</b> ${data.pharmacogenomic_profile.detected_variants[0]?.rsid || 'N/A'}</p>
-            </div>
-            <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #e11d48; margin-bottom: 20px;">
-                <p><b>Medical Recommendation:</b><br>${data.clinical_recommendation.action}</p>
-            </div>
-            <div style="padding: 10px; border: 1px dashed #ccc;">
-                <p style="font-size: 0.95em; color: #333;"><b>AI Interpretation:</b> ${data.llm_generated_explanation.summary}</p>
-            </div>
-            <footer style="margin-top: 50px; font-size: 0.8em; color: #999; border-top: 1px solid #eee; padding-top: 10px; text-align: center;">
-                PharmaGuard AI Engine | Team Akatsuki | RIFT 2026 Hackathon
-            </footer>
-        </div>
-    `;
-    resultsArea.scrollIntoView({ behavior: 'smooth' });
 }
 
 document.getElementById('download-pdf').addEventListener('click', () => {
