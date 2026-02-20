@@ -3,25 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PharmaGuard - RIFT 2026</title>
+    <title>PharmaGuard - Cyber-Genomic Lab</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="side-hud left-panel">
+        <p>SYSTEM_STATUS: ACTIVE</p>
+        <p>SCANNING_GENOME...</p>
+        <p>ENZYME_MAP: LOADED</p>
+        <div class="pulse-line"></div>
+    </div>
+
+    <div class="side-hud right-panel">
+        <p>CPIC_GUIDELINES: v4.2</p>
+        <p>TEch:EVERYWHERE^^**</p>
+        <p>DATA_STREAM: SECURE</p>
+        <div class="pulse-line"></div>
+    </div>
+
     <div class="container">
-        <h1>PharmaGuard: AI Risk Predictor</h1>
+        <h1>PharmaGuard</h1>
         
         <div class="upload-section" id="drop-zone">
-            <p>Drag & Drop Patient VCF File here</p>
+            <p>DRAG & DROP PATIENT DNA FILE</p>
             <input type="file" id="vcf-upload" accept=".vcf" hidden>
-            <button class="browse-btn" onclick="document.getElementById('vcf-upload').click()">Browse File</button>
+            <button class="browse-btn" onclick="document.getElementById('vcf-upload').click()">BROWSE_GENOME</button>
         </div>
 
         <div class="input-group">
-            <label>Select Drug:</label>
-            <input type="text" id="drug-input" placeholder="e.g. CODEINE, WARFARIN">
+            <label>Select Target Medication:</label>
+            <select id="drug-input">
+                <option value="" disabled selected>-- Choose Medicine --</option>
+                <option value="CODEINE">CODEINE (Pain Management)</option>
+                <option value="WARFARIN">WARFARIN (Blood Thinner)</option>
+                <option value="CLOPIDOGREL">CLOPIDOGREL (Heart Care)</option>
+                <option value="SIMVASTATIN">SIMVASTATIN (Cholesterol)</option>
+                <option value="AZATHIOPRINE">AZATHIOPRINE (Immunity)</option>
+                <option value="FLUOROURACIL">FLUOROURACIL (Chemotherapy)</option>
+            </select>
         </div>
 
-        <button id="analyze-btn" class="main-btn">Analyze Genomic Risk</button>
+        <button id="analyze-btn" class="main-btn">Execute Genomic Scan</button>
 
         <div id="results" class="hidden">
             <div class="result-header">
@@ -31,7 +53,6 @@
                     <button onclick="resetUI()" class="action-btn" style="background:#ef4444;">🔄 Reset</button>
                 </div>
             </div>
-            
             <div id="visual-result"></div>
             <pre id="json-output"></pre>
         </div>
